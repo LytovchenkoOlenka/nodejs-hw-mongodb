@@ -15,8 +15,8 @@ export const setupServer = () => {
   const app = express();
 
   // Вбудований у express middleware для обробки (парсингу) JSON-даних у запитах
-  // наприклад, у запитах POST або PATCH
-  app.use(express.json());
+  // наприклад, у запитах POST або PATCH, але парсить він на всіх запитах
+  // app.use(express.json());
 
   // Middleware CORS(доступ до ресурсу з будь-якого джерела)
   app.use(cors());
