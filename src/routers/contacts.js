@@ -9,6 +9,14 @@ import {
   editContactController,
 } from '../controllers/contacts.js';
 
+import { validateBody } from '../middlewares/validateBody.js';
+import {
+  createContactSchema,
+  updateContactSchema,
+} from '../validation/contacts.js';
+
+import { isValidId } from '../middlewares/isValidId.js';
+
 const router = express.Router();
 
 //змінна, для парсингу body. Використовувати на POST,PUT, PUTCH запитах
@@ -18,12 +26,20 @@ router.get('/contacts', ctrlWrapper(getContactsController));
 
 router.get('/contacts/:contactId', ctrlWrapper(getContactByIdController));
 
-router.post('/contacts', jsonParser, ctrlWrapper(createContactController));
+router.post(
+  '/contacts',
+  validateBody(createContactSchema),
+  isValidId,
+  jsonParser,
+  ctrlWrapper(createContactController),
+);
 
 router.delete('/contacts/:contactId', ctrlWrapper(deleteContactController));
 
 router.patch(
   '/contacts/:contactId',
+  validateBody(updateContactSchema),
+  isValidId,
   jsonParser,
   ctrlWrapper(editContactController),
 );
