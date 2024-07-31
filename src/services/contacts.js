@@ -1,7 +1,33 @@
 import { ContactsCollection } from '../db/models/contacts.js';
 
-export const getAllContacts = () => {
-  return ContactsCollection.find();
+export const getAllContacts = async ({ page, perPage }) => {
+  const limit = perPage;
+  const skip = page > 0 ? (page - 1) * perPage : 0;
+
+  //Використовуємо Promise.all для того,щоб робити два асинхронних запити одночасно, бо вони незалежні один від одного
+  const [data, countContacts] = await Promise.all([
+    ContactsCollection.find().skip(skip).limit(limit).exec(),
+    ContactsCollection.countDocuments(),
+  ]);
+
+  // const data = await ContactsCollection.find().skip(skip).limit(limit).exec();
+  // const countContacts = await ContactsCollection.countDocuments();
+
+  const totalPages = Math.ceil(countContacts / perPage);
+
+  return {
+    data,
+    page,
+    perPage,
+    totalItems: countContacts,
+    totalPages,
+    hasNextPage: totalPages - page > 0,
+    hasPreviousPage: page > 1,
+  };
+
+  // return ContactsCollection.find()
+  //   .limit(perPage)
+  //   .skip(page > 0 ? (page - 1) * perPage : 0);
 };
 
 //Другий варіант створення функції роботи з бд
