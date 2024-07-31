@@ -1,12 +1,16 @@
 import { ContactsCollection } from '../db/models/contacts.js';
 
-export const getAllContacts = async ({ page, perPage }) => {
+export const getAllContacts = async ({ page, perPage, sortBy, sortOrder }) => {
   const limit = perPage;
   const skip = page > 0 ? (page - 1) * perPage : 0;
 
   //Використовуємо Promise.all для того,щоб робити два асинхронних запити одночасно, бо вони незалежні один від одного
   const [data, countContacts] = await Promise.all([
-    ContactsCollection.find().skip(skip).limit(limit).exec(),
+    ContactsCollection.find()
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(limit)
+      .exec(),
     ContactsCollection.countDocuments(),
   ]);
 
