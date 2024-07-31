@@ -1,37 +1,42 @@
 import { ContactsCollection } from '../db/models/contacts.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
-export const getAllContacts = async ({ page, perPage, sortBy, sortOrder }) => {
+export const getAllContacts = async ({
+  page,
+  perPage,
+  sortBy,
+  sortOrder,
+  filter,
+}) => {
   const limit = perPage;
   const skip = page > 0 ? (page - 1) * perPage : 0;
 
+  const contactsQuery = ContactsCollection.find();
+
+  if (filter.contactType) {
+    contactsQuery.where('contactType').equals(filter.contactType);
+  }
+
+  if (filter.isFavourite) {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
+  }
+
   //Використовуємо Promise.all для того,щоб робити два асинхронних запити одночасно, бо вони незалежні один від одного
-  const [data, countContacts] = await Promise.all([
-    ContactsCollection.find()
+  const [countContacts, contacts] = await Promise.all([
+    ContactsCollection.find().merge(contactsQuery).countDocuments(),
+    contactsQuery
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(limit)
       .exec(),
-    ContactsCollection.countDocuments(),
   ]);
 
-  // const data = await ContactsCollection.find().skip(skip).limit(limit).exec();
-  // const countContacts = await ContactsCollection.countDocuments();
-
-  const totalPages = Math.ceil(countContacts / perPage);
+  const paginationData = calculatePaginationData(countContacts, perPage, page);
 
   return {
-    data,
-    page,
-    perPage,
-    totalItems: countContacts,
-    totalPages,
-    hasNextPage: totalPages - page > 0,
-    hasPreviousPage: page > 1,
+    data: contacts,
+    ...paginationData,
   };
-
-  // return ContactsCollection.find()
-  //   .limit(perPage)
-  //   .skip(page > 0 ? (page - 1) * perPage : 0);
 };
 
 //Другий варіант створення функції роботи з бд
@@ -40,8 +45,8 @@ export const getAllContacts = async ({ page, perPage, sortBy, sortOrder }) => {
 //   return contacts;
 // };
 
-export const getContactById = (contactId) => {
-  return ContactsCollection.findById(contactId);
+export const getContactById = (id) => {
+  return ContactsCollection.findById(id);
 };
 
 // export const getContactById = async (contactsId) => {
@@ -53,12 +58,12 @@ export const createContact = (contact) => {
   return ContactsCollection.create(contact);
 };
 
-export const deleteContact = (contactId) => {
-  return ContactsCollection.findByIdAndDelete(contactId);
+export const deleteContact = (id) => {
+  return ContactsCollection.findByIdAndDelete(id);
 };
 
-export const editContact = (contactId, contact, options = {}) => {
-  return ContactsCollection.findByIdAndUpdate(contactId, contact, {
+export const editContact = (id, contact, options = {}) => {
+  return ContactsCollection.findByIdAndUpdate(id, contact, {
     new: true,
     ...options,
   });
