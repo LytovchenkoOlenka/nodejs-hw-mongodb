@@ -4,6 +4,7 @@ import cors from 'cors';
 import { env } from './utils/env.js';
 
 import contactsRouter from './routers/contacts.js';
+import authRouter from './routers/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
@@ -34,6 +35,7 @@ export const setupServer = () => {
   //     res.json({ message: 'Hello world!' });
   //   });
 
+  app.use(authRouter);
   app.use(contactsRouter);
 
   app.use('*', notFoundHandler);
