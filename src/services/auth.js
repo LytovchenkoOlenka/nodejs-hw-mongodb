@@ -7,6 +7,18 @@ import { SessionsCollection } from '../db/models/session.js';
 
 import { FIFTEEN_MINUTES, MONTH } from '../constants/index.js';
 
+const createSession = () => {
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+
+  return {
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + MONTH),
+  };
+};
+
 export const registerUser = async (user) => {
   const isDuplicatedEmail = await UsersCollection.findOne({
     email: user.email,
@@ -35,15 +47,11 @@ export const loginUser = async (email, password) => {
   }
   await SessionsCollection.deleteOne({ userId: user._id });
 
-  const accessToken = randomBytes(30).toString('base64');
-  const refreshToken = randomBytes(30).toString('base64');
+  const newSession = createSession();
 
   return await SessionsCollection.create({
     userId: user._id,
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + MONTH),
+    ...newSession,
   });
 };
 
@@ -51,7 +59,7 @@ export const logoutUser = (sessionId) => {
   return SessionsCollection.deleteOne({ _id: sessionId });
 };
 
-export const refreshUser = async (sessionId, refreshToken) => {
+export const refreshUsersSession = async (sessionId, refreshToken) => {
   const session = await SessionsCollection.findOne({
     _id: sessionId,
     refreshToken,
@@ -67,11 +75,10 @@ export const refreshUser = async (sessionId, refreshToken) => {
 
   await SessionsCollection.deleteOne({ _id: session._id });
 
-  return SessionsCollection.create({
+  const newSession = createSession();
+
+  return await SessionsCollection.create({
     userId: session.userId,
-    accessToken: randomBytes(30).toString('base64'),
-    refreshToken: randomBytes(30).toString('base64'),
-    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
-    refreshTokenValidUntil: new Date(Date.now() + MONTH),
+    ...newSession,
   });
 };

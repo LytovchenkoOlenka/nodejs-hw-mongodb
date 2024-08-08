@@ -22,6 +22,7 @@ export const getContactsController = async (req, res) => {
     sortBy,
     sortOrder,
     filter,
+    userId: req.user._id,
   });
 
   res.status(200).json({
@@ -33,9 +34,12 @@ export const getContactsController = async (req, res) => {
 
 export const getContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+  const contact = await getContactById(contactId, req.user._id);
 
-  if (contact === null) {
+  if (
+    contact === null ||
+    contact.userId.toString() !== req.user._id.toString()
+  ) {
     return next(createHttpError(404, 'Contact not found'));
     // throw createHttpError(404, 'Contact not found');
   }
@@ -54,6 +58,7 @@ export const createContactController = async (req, res) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
+    userId: req.user._id,
   };
 
   const result = await createContact(contact);
@@ -68,9 +73,12 @@ export const createContactController = async (req, res) => {
 export const deleteContactController = async (req, res, next) => {
   const { contactId } = req.params;
 
-  const deletedContact = await deleteContact(contactId);
+  const deletedContact = await deleteContact(contactId, req.user._id);
 
-  if (deletedContact === null) {
+  if (
+    deletedContact === null ||
+    deletedContact.userId.toString() !== req.user._id.toString()
+  ) {
     return next(createHttpError(404, 'Contact not found'));
   }
 
@@ -81,6 +89,8 @@ export const deleteContactController = async (req, res, next) => {
 
 export const editContactController = async (req, res, next) => {
   const { contactId } = req.params;
+  const { _id: userId } = req.user;
+
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
@@ -89,9 +99,9 @@ export const editContactController = async (req, res, next) => {
     contactType: req.body.contactType,
   };
 
-  const editedContact = await editContact(contactId, contact);
+  const editedContact = await editContact(contactId, userId, contact);
 
-  if (!editedContact) {
+  if (!editedContact || editedContact.userId.toString() !== userId.toString()) {
     return next(createHttpError(404, 'Contact not found'));
   }
 

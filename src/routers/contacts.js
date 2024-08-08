@@ -16,11 +16,15 @@ import {
 } from '../validation/contacts.js';
 
 import { isValidId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
 //змінна, для парсингу body. Використовувати на POST,PUT, PUTCH запитах
 const jsonParser = express.json();
+
+//Застосовуємо middleware по обробці запиту на аутентифікацію до всіх шляхів.
+router.use(authenticate);
 
 router.get('/contacts', ctrlWrapper(getContactsController));
 
