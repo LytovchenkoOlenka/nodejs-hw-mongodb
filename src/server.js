@@ -8,6 +8,7 @@ import contactsRouter from './routers/contacts.js';
 import authRouter from './routers/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import { UPLOAD_DIR } from './constants/index.js';
 
 // Читаємо змінну оточення PORT
 const PORT = Number(env('PORT', '3000'));
@@ -41,6 +42,9 @@ export const setupServer = () => {
 
   app.use(authRouter);
   app.use(contactsRouter);
+
+  // Додамо до нашого express можливість роздавати статичні файли
+  app.use('/uploads', express.static(UPLOAD_DIR));
 
   app.use('*', notFoundHandler);
   app.use(errorHandler);

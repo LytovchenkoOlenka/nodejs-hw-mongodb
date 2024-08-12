@@ -18,6 +18,8 @@ import {
 import { isValidId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
 
+import { upload } from '../middlewares/multer.js';
+
 const router = express.Router();
 
 //змінна, для парсингу body. Використовувати на POST,PUT, PUTCH запитах
@@ -37,6 +39,7 @@ router.get(
 router.post(
   '/contacts',
   jsonParser,
+  upload.single('photo'),
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
@@ -46,8 +49,9 @@ router.delete('/contacts/:contactId', ctrlWrapper(deleteContactController));
 router.patch(
   '/contacts/:contactId',
   jsonParser,
-  validateBody(updateContactSchema),
   isValidId,
+  upload.single('photo'),
+  validateBody(updateContactSchema),
   ctrlWrapper(editContactController),
 );
 

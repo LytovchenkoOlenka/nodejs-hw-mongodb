@@ -7,9 +7,13 @@ import {
   editContact,
 } from '../services/contacts.js';
 
+import { env } from '../utils/env.js';
+
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -90,6 +94,17 @@ export const deleteContactController = async (req, res, next) => {
 export const editContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const { _id: userId } = req.user;
+  const photo = req.file;
+
+  let photoUrl;
+
+  if (photo) {
+    if (env('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
+  }
 
   const contact = {
     name: req.body.name,
@@ -97,8 +112,12 @@ export const editContactController = async (req, res, next) => {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
+    photo: photoUrl,
   };
 
+  console.log(contact);
+
+  // як додати тут фото, треба ще придумати
   const editedContact = await editContact(contactId, userId, contact);
 
   if (!editedContact || editedContact.userId.toString() !== userId.toString()) {
