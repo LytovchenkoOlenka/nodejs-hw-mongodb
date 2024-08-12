@@ -22,7 +22,7 @@ export const SMTP = {
 //шлях до папки з html-шаблоном мейлу скиду паролю
 export const TEMPLATES_DIR = path.join(process.cwd(), 'src', 'templates');
 
-//шлях до папок для завантаження картинок
+//шляхи до папок для завантаження картинок
 export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
 export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
