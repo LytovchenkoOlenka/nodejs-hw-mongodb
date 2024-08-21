@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: PhoneBook
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: Efficient contact management app
+tags:
+  - name: Students
+    description: Operations about users.
+  - name: Auth
+    description: Auth operations.
+servers:
+  - url: http://localhost:3000
+  # - url:
+paths:
+  /students/{id}:
+    get:
+      $ref: ../swagger/paths/contacts/{id}/get.yaml
+  /students:
+    post:
+      $ref: ../swagger/paths/contacts/post.yaml
+  /students:
+    get:
+      $ref: ../swagger/paths/contacts/get.yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
