@@ -10,6 +10,8 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { UPLOAD_DIR } from './constants/index.js';
 
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
+
 // Читаємо змінну оточення PORT
 const PORT = Number(env('PORT', '3000'));
 
@@ -36,15 +38,17 @@ export const setupServer = () => {
     }),
   );
 
+  // Додамо до нашого express можливість роздавати статичні файли
+  app.use('/uploads', express.static(UPLOAD_DIR));
+  //Додаємо ф-ю, яка буде повертати нам або роут для swagger
+  app.use('/api-docs', swaggerDocs());
+
   //   app.get('/', (req, res) => {
   //     res.json({ message: 'Hello world!' });
   //   });
 
   app.use(authRouter);
   app.use(contactsRouter);
-
-  // Додамо до нашого express можливість роздавати статичні файли
-  app.use('/uploads', express.static(UPLOAD_DIR));
 
   app.use('*', notFoundHandler);
   app.use(errorHandler);

@@ -71,7 +71,7 @@ responses:
                 data:
                   type: array
                   items:
-                    $ref: '../../components/schemas/student.yaml'
+                    $ref: '../../components/schemas/contact.yaml'
                 page:
                   type: number
                   example: 2
@@ -91,6 +91,6 @@ responses:
                   type: boolean
                   example: true
   '401':
-    $ref: '../../../components/responses/401.yaml'
+    $ref: '../../components/responses/401.yaml'
   '404':
-    $ref: '../../../components/responses/404.yaml'
+    $ref: '../../components/responses/404.yaml'

@@ -136,7 +136,7 @@ export const editContactController = async (req, res, next) => {
 
   res.status(200).json({
     status: 200,
-    message: 'Successfully patched a contact!',
+    message: 'Successfully updated a contact!',
     data: editedContact,
   });
 };

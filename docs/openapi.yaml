@@ -7,7 +7,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   description: Efficient contact management app
 tags:
-  - name: Students
+  - name: Contacts
     description: Operations about users.
   - name: Auth
     description: Auth operations.
@@ -15,13 +15,16 @@ servers:
   - url: http://localhost:3000
   # - url:
 paths:
-  /students/{id}:
+  /contacts/{id}:
     get:
       $ref: ../swagger/paths/contacts/{id}/get.yaml
-  /students:
+    delete:
+      $ref: ../swagger/paths/contacts/{id}/delete.yaml
+    patch:
+      $ref: ../swagger/paths/contacts/{id}/patch.yaml
+  /contacts:
     post:
       $ref: ../swagger/paths/contacts/post.yaml
-  /students:
     get:
       $ref: ../swagger/paths/contacts/get.yaml
 components:
