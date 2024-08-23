@@ -44,10 +44,6 @@ requestBody:
               - home
               - personal
             example: 'personal'
-          userId:
-            description: 'ID of the user who owns the contact'
-            type: string
-            example: '60d0fe4f5311236168a109ca'
           photo:
             description: "URL to the contact's photo"
             type: string
