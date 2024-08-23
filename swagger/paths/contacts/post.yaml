@@ -16,7 +16,6 @@ requestBody:
             -email
             -isFavourite
             -contactType
-            userId
             -photo,
           ]
         properties:
